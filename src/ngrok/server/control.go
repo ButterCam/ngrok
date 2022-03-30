@@ -60,7 +60,7 @@ type Control struct {
 	shutdown *util.Shutdown
 }
 
-func NewControl(ctlConn conn.Conn, authMsg *msg.Auth) {
+func NewControl(ctlConn conn.Conn, authenticator Authenticator, authMsg *msg.Auth) {
 	var err error
 
 	// create the object
@@ -87,6 +87,14 @@ func NewControl(ctlConn conn.Conn, authMsg *msg.Auth) {
 	if c.id == "" {
 		// it's a new session, assign an ID
 		if c.id, err = util.SecureRandId(16); err != nil {
+			failAuth(err)
+			return
+		}
+	}
+
+	// Use authenticator to auth the msg
+	if authenticator != nil {
+		if err = authenticator.Auth(authMsg); err != nil {
 			failAuth(err)
 			return
 		}
