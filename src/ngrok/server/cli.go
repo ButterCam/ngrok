@@ -2,7 +2,6 @@ package server
 
 import (
 	"flag"
-	"strings"
 )
 
 type Options struct {
@@ -10,6 +9,7 @@ type Options struct {
 	httpsAddr        string
 	tunnelAddr       string
 	domain           string
+	managedHttps     bool
 	tlsCrt           string
 	tlsKey           string
 	logto            string
@@ -20,7 +20,7 @@ type Options struct {
 type tokens []string
 
 func (i *tokens) String() string {
-	return strings.Join(*i, ",")
+	return "[]string"
 }
 
 func (i *tokens) Set(value string) error {
@@ -32,13 +32,14 @@ func parseArgs() *Options {
 	httpAddr := flag.String("httpAddr", ":80", "Public address for HTTP connections, empty string to disable")
 	httpsAddr := flag.String("httpsAddr", ":443", "Public address listening for HTTPS connections, emptry string to disable")
 	tunnelAddr := flag.String("tunnelAddr", ":4443", "Public address listening for ngrok client")
-	domain := flag.String("domain", "ngrok.com", "Domain where the tunnels are hosted")
+	domain := flag.String("domain", "bybutter.com", "Domain where the tunnels are hosted")
+	managedHttps := flag.Bool("managed-https", false, "Make service as a internal HTTP server, all HTTPS connections will handled by external gateway")
 	tlsCrt := flag.String("tlsCrt", "", "Path to a TLS certificate file")
 	tlsKey := flag.String("tlsKey", "", "Path to a TLS key file")
 	logto := flag.String("log", "stdout", "Write log messages to this file. 'stdout' and 'none' have special meanings")
 	loglevel := flag.String("log-level", "DEBUG", "The level of messages to log. One of: DEBUG, INFO, WARNING, ERROR")
 	var authorizedTokens tokens
-	flag.Var(&authorizedTokens, "authorizedTokens", "The level of messages to log. One of: DEBUG, INFO, WARNING, ERROR")
+	flag.Var(&authorizedTokens, "authorizedTokens", "The accepted tokens used for clients")
 	flag.Parse()
 
 	return &Options{
@@ -46,6 +47,7 @@ func parseArgs() *Options {
 		httpsAddr:        *httpsAddr,
 		tunnelAddr:       *tunnelAddr,
 		domain:           *domain,
+		managedHttps:     *managedHttps,
 		tlsCrt:           *tlsCrt,
 		tlsKey:           *tlsKey,
 		logto:            *logto,

@@ -120,22 +120,27 @@ func Main() {
 	// start listeners
 	listeners = make(map[string]*conn.Listener)
 
-	// load tls configuration
-	tlsConfig, err := LoadTLSConfig(opts.tlsCrt, opts.tlsKey)
-	if err != nil {
-		panic(err)
-	}
-
 	// listen for http
 	if opts.httpAddr != "" {
 		listeners["http"] = startHttpListener(opts.httpAddr, nil)
 	}
 
-	// listen for https
-	if opts.httpsAddr != "" {
-		listeners["https"] = startHttpListener(opts.httpsAddr, tlsConfig)
-	}
+	if !opts.managedHttps {
+		// load tls configuration
+		tlsConfig, err := LoadTLSConfig(opts.tlsCrt, opts.tlsKey)
+		if err != nil {
+			panic(err)
+		}
 
-	// ngrok clients
-	tunnelListener(opts.tunnelAddr, tlsConfig, CreateAuthenticator(opts.authorizedTokens))
+		// listen for https
+		if opts.httpsAddr != "" {
+			listeners["https"] = startHttpListener(opts.httpsAddr, tlsConfig)
+		}
+
+		// ngrok clients
+		tunnelListener(opts.tunnelAddr, tlsConfig, CreateAuthenticator(opts.authorizedTokens))
+	} else {
+		// ngrok clients
+		tunnelListener(opts.tunnelAddr, nil, CreateAuthenticator(opts.authorizedTokens))
+	}
 }

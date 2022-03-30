@@ -102,20 +102,22 @@ func newClientModel(config *Configuration, ctl mvc.Controller) *ClientModel {
 	}
 
 	// configure TLS
-	if config.TrustHostRootCerts {
-		m.Info("Trusting host's root certificates")
-		m.tlsConfig = &tls.Config{}
-	} else {
-		m.Info("Trusting root CAs: %v", rootCrtPaths)
-		var err error
-		if m.tlsConfig, err = LoadTLSConfig(rootCrtPaths); err != nil {
-			panic(err)
+	if !config.NoTls {
+		if config.TrustHostRootCerts {
+			m.Info("Trusting host's root certificates")
+			m.tlsConfig = &tls.Config{}
+		} else {
+			m.Info("Trusting root CAs: %v", rootCrtPaths)
+			var err error
+			if m.tlsConfig, err = LoadTLSConfig(rootCrtPaths); err != nil {
+				panic(err)
+			}
 		}
-	}
 
-	// configure TLS SNI
-	m.tlsConfig.ServerName = serverName(m.serverAddr)
-	m.tlsConfig.InsecureSkipVerify = useInsecureSkipVerify()
+		// configure TLS SNI
+		m.tlsConfig.ServerName = serverName(m.serverAddr)
+		m.tlsConfig.InsecureSkipVerify = useInsecureSkipVerify()
+	}
 
 	return m
 }

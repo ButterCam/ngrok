@@ -23,7 +23,7 @@ func (receiver *simpleAuthenticator) Auth(auth *msg.Auth) error {
 	return fmt.Errorf("Unauthorized token %s ", auth.User)
 }
 
-func CreateAuthenticator(tokens []string) *simpleAuthenticator {
+func CreateAuthenticator(tokens []string) Authenticator {
 	if len(tokens) == 0 {
 		return nil
 	}

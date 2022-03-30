@@ -158,7 +158,7 @@ func NewTunnel(m *msg.ReqTunnel, ctl *Control) (t *Tunnel, err error) {
 		bindTcp(0)
 		return
 
-	case "http", "https":
+	case "http":
 		l, ok := listeners[proto]
 		if !ok {
 			err = fmt.Errorf("Not listening for %s connections", proto)
@@ -167,6 +167,28 @@ func NewTunnel(m *msg.ReqTunnel, ctl *Control) (t *Tunnel, err error) {
 
 		if err = registerVhost(t, proto, l.Addr.(*net.TCPAddr).Port); err != nil {
 			return
+		}
+
+	case "https":
+		if opts.managedHttps {
+			addr, e := net.ResolveTCPAddr("", opts.httpsAddr)
+			if e != nil {
+				err = fmt.Errorf("Can't resolve https addr")
+				return
+			}
+			if err = registerVhost(t, proto, addr.Port); err != nil {
+				return
+			}
+		} else {
+			l, ok := listeners[proto]
+			if !ok {
+				err = fmt.Errorf("Not listening for %s connections", proto)
+				return
+			}
+
+			if err = registerVhost(t, proto, l.Addr.(*net.TCPAddr).Port); err != nil {
+				return
+			}
 		}
 
 	default:
