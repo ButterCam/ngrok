@@ -2,6 +2,7 @@
 export GOPATH:=$(shell pwd)
 
 BUILDTAGS=debug
+GO111MODULE=off
 default: all
 
 deps: assets
