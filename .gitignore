@@ -10,3 +10,6 @@ src/ngrok/client/assets/
 src/ngrok/server/assets/
 .idea
 *.iml
+assets/tls
+assets/client/tls
+assets/server/tls

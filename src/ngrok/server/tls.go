@@ -2,32 +2,83 @@ package server
 
 import (
 	"crypto/tls"
-	"io/ioutil"
+	"crypto/x509"
+	"encoding/pem"
+	"fmt"
 	"ngrok/server/assets"
 )
 
-func LoadTLSConfig(crtPath string, keyPath string) (tlsConfig *tls.Config, err error) {
-	fileOrAsset := func(path string, default_path string) ([]byte, error) {
-		loadFn := ioutil.ReadFile
-		if path == "" {
-			loadFn = assets.Asset
-			path = default_path
+func LoadCertPool(rootCertPaths []string) (*x509.CertPool, error) {
+	pool := x509.NewCertPool()
+
+	for _, certPath := range rootCertPaths {
+		rootCrt, err := assets.Asset(certPath)
+		if err != nil {
+			return nil, err
 		}
 
-		return loadFn(path)
+		pemBlock, _ := pem.Decode(rootCrt)
+		if pemBlock == nil {
+			return nil, fmt.Errorf("Bad PEM data")
+		}
+
+		certs, err := x509.ParseCertificates(pemBlock.Bytes)
+		if err != nil {
+			return nil, err
+		}
+
+		pool.AddCert(certs[0])
 	}
 
+	return pool, nil
+}
+
+func LoadTLSConfig(rootCertPaths []string, crtPath string, keyPath string) (tlsConfig *tls.Config, err error) {
+	var (
+		crt  []byte
+		key  []byte
+		cert tls.Certificate
+		pool *x509.CertPool
+	)
+
+	if crt, err = assets.Asset(crtPath); err != nil {
+		return
+	}
+
+	if key, err = assets.Asset(keyPath); err != nil {
+		return
+	}
+
+	if cert, err = tls.X509KeyPair(crt, key); err != nil {
+		return
+	}
+
+	if pool, err = LoadCertPool(rootCertPaths); err != nil {
+		return
+	}
+
+	tlsConfig = &tls.Config{
+		RootCAs:      pool,
+		ClientAuth:   clientAuth(),
+		ClientCAs:    pool,
+		Certificates: []tls.Certificate{cert},
+	}
+
+	return
+}
+
+func LoadHttpsConfig(crtPath string, keyPath string) (tlsConfig *tls.Config, err error) {
 	var (
 		crt  []byte
 		key  []byte
 		cert tls.Certificate
 	)
 
-	if crt, err = fileOrAsset(crtPath, "assets/server/tls/snakeoil.crt"); err != nil {
+	if crt, err = assets.Asset(crtPath); err != nil {
 		return
 	}
 
-	if key, err = fileOrAsset(keyPath, "assets/server/tls/snakeoil.key"); err != nil {
+	if key, err = assets.Asset(keyPath); err != nil {
 		return
 	}
 

@@ -9,7 +9,7 @@ import (
 	"ngrok/client/assets"
 )
 
-func LoadTLSConfig(rootCertPaths []string) (*tls.Config, error) {
+func LoadCertPool(rootCertPaths []string) (*x509.CertPool, error) {
 	pool := x509.NewCertPool()
 
 	for _, certPath := range rootCertPaths {
@@ -31,5 +31,45 @@ func LoadTLSConfig(rootCertPaths []string) (*tls.Config, error) {
 		pool.AddCert(certs[0])
 	}
 
-	return &tls.Config{RootCAs: pool}, nil
+	return pool, nil
+}
+
+func LoadTLSConfig(rootCertPaths []string, crtPath string, keyPath string) (tlsConfig *tls.Config, err error) {
+	var (
+		certs []tls.Certificate
+		pool  *x509.CertPool
+	)
+
+	if crtPath != "" && keyPath != "" {
+		var (
+			crt  []byte
+			key  []byte
+			cert tls.Certificate
+		)
+
+		if crt, err = assets.Asset(crtPath); err != nil {
+			return
+		}
+
+		if key, err = assets.Asset(keyPath); err != nil {
+			return
+		}
+
+		if cert, err = tls.X509KeyPair(crt, key); err != nil {
+			return
+		}
+
+		certs = append(certs, cert)
+	}
+
+	if pool, err = LoadCertPool(rootCertPaths); err != nil {
+		return
+	}
+
+	tlsConfig = &tls.Config{
+		RootCAs:            pool,
+		Certificates:       certs,
+		InsecureSkipVerify: useInsecureSkipVerify(),
+	}
+	return
 }

@@ -16,15 +16,17 @@ import (
 )
 
 type Configuration struct {
-	HttpProxy          string                          `yaml:"http_proxy,omitempty"`
-	ServerAddr         string                          `yaml:"server_addr,omitempty"`
-	InspectAddr        string                          `yaml:"inspect_addr,omitempty"`
-	TrustHostRootCerts bool                            `yaml:"trust_host_root_certs,omitempty"`
-	NoTls              bool                            `yaml:"no_tls,omitempty"`
-	AuthToken          string                          `yaml:"auth_token,omitempty"`
-	Tunnels            map[string]*TunnelConfiguration `yaml:"tunnels,omitempty"`
-	LogTo              string                          `yaml:"-"`
-	Path               string                          `yaml:"-"`
+	HttpProxy   string                          `yaml:"http_proxy,omitempty"`
+	ServerAddr  string                          `yaml:"server_addr,omitempty"`
+	InspectAddr string                          `yaml:"inspect_addr,omitempty"`
+	RootCerts   []string                        `yaml:"root_certs,omitempty"`
+	ClientCert  string                          `yaml:"client_cert,omitempty"`
+	ClientKey   string                          `yaml:"client_key,omitempty"`
+	NoTls       bool                            `yaml:"no_tls,omitempty"`
+	AuthToken   string                          `yaml:"auth_token,omitempty"`
+	Tunnels     map[string]*TunnelConfiguration `yaml:"tunnels,omitempty"`
+	LogTo       string                          `yaml:"-"`
+	Path        string                          `yaml:"-"`
 }
 
 type TunnelConfiguration struct {
@@ -79,6 +81,18 @@ func LoadConfiguration(opts *Options) (config *Configuration, err error) {
 
 	if config.HttpProxy == "" {
 		config.HttpProxy = os.Getenv("http_proxy")
+	}
+
+	if config.ClientCert == "" {
+		config.ClientCert = defaultCrtPath
+	}
+
+	if config.ClientKey == "" {
+		config.ClientKey = defaultKeyPath
+	}
+
+	if len(config.RootCerts) == 0 {
+		config.RootCerts = defaultRootCrtPaths
 	}
 
 	// validate and normalize configuration
