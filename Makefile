@@ -23,13 +23,13 @@ bin/cfssl:
 	GOOS="" GOARCH="" go get github.com/cloudflare/cfssl/cmd/cfssljson
 
 gencert: bin/cfssl
-	if [ ! -f assets/tls/ca.pem ]; then
-		bin/cfssl gencert -initca assets/tls/ca-csr.json | bin/cfssljson -bare assets/tls/ca -
-		bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/server.json | bin/cfssljson -bare assets/server/tls/server
-		bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/client.json | bin/cfssljson -bare assets/client/tls/client
-		cp assets/tls/ca.pem assets/server/tls
-		cp assets/tls/ca.pem assets/client/tls
-	fi
+ifeq ("$(wildcard assets/tls/ca.pem)","")
+	bin/cfssl gencert -initca assets/tls/ca-csr.json | bin/cfssljson -bare assets/tls/ca -
+	bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/server.json | bin/cfssljson -bare assets/server/tls/server
+	bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/client.json | bin/cfssljson -bare assets/client/tls/client
+	cp assets/tls/ca.pem assets/server/tls
+	cp assets/tls/ca.pem assets/client/tls
+endif
 
 bin/go-bindata:
 	GOOS="" GOARCH="" go get github.com/jteeuwen/go-bindata/go-bindata

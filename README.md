@@ -10,7 +10,7 @@ ngrok captures and analyzes all traffic over the tunnel for later inspection and
 
 This fork is based on ngrok 1.x which is opensource and free.
 You must be noticed that ngrok 1.x is no longer supported by ngrok officially.  
-We create this fork for our development env, **you should not use this version for PRODUCTION.**
+We create this fork for our development env, **you should not use this version for PRODUCTION.**  
 ngrok 2.x is the successor to 1.x. But it no longer opensource and free with self-hosting.
 
 ## Changes from ngrok 1.x main branch
