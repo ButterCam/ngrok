@@ -2,6 +2,7 @@ package server
 
 import (
 	"flag"
+	"ngrok/selfhosting"
 )
 
 type Options struct {
@@ -37,9 +38,9 @@ func parseArgs() *Options {
 	loglevel := flag.String("log-level", "DEBUG", "The level of messages to log. One of: DEBUG, INFO, WARNING, ERROR")
 	httpAddr := flag.String("httpAddr", ":80", "Public address for HTTP connections, empty string to disable")
 	httpsAddr := flag.String("httpsAddr", ":443", "Public address listening for HTTPS connections, emptry string to disable")
-	tunnelAddr := flag.String("tunnelAddr", ":4443", "Public address listening for ngrok client")
-	domain := flag.String("domain", "bybutter.com", "Domain where the tunnels are hosted")
-	tpcDomain := flag.String("topDomain", "tcp.bybutter.com", "Domain where the tcp tunnels are hosted")
+	tunnelAddr := flag.String("tunnelAddr", selfhosting.NgrokdPort, "Public address listening for ngrok client")
+	domain := flag.String("domain", selfhosting.Domain, "Domain where the tunnels are hosted")
+	tpcDomain := flag.String("tcpDomain", selfhosting.TcpDomain, "Domain where the tcp tunnels are hosted")
 	managedHttps := flag.Bool("managed-https", false, "Make service as a internal HTTP server, all HTTPS connections will handled by external gateway")
 	serverCrt := flag.String("serverCrt", "", "Path to a TLS certificate file which used for tunnel connections")
 	serverKey := flag.String("serverKey", "", "Path to a TLS key file which used for tunnel connections")

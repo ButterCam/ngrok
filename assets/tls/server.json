@@ -1,0 +1,18 @@
+{
+    "CN": "Server",
+    "hosts": [
+        "ngrokd.bybutter.com"
+    ],
+    "key": {
+        "algo": "ecdsa",
+        "size": 256
+    },
+    "names": [
+        {
+            "C": "US",
+            "ST": "CA",
+            "L": "San Francisco"
+        }
+    ]
+}
+

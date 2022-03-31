@@ -12,6 +12,7 @@ import (
 	"ngrok/log"
 	"ngrok/msg"
 	"ngrok/proto"
+	"ngrok/selfhosting"
 	"ngrok/util"
 	"ngrok/version"
 	"runtime"
@@ -21,7 +22,7 @@ import (
 )
 
 const (
-	defaultServerAddr   = "ngrokd.bybutter.com:4443"
+	defaultServerAddr   = selfhosting.NgrokdDomain + selfhosting.NgrokdPort
 	defaultInspectAddr  = "127.0.0.1:4040"
 	pingInterval        = 20 * time.Second
 	maxPongLatency      = 15 * time.Second
