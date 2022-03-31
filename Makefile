@@ -25,7 +25,9 @@ bin/cfssl:
 gencert: bin/cfssl
 ifeq ("$(wildcard assets/tls/ca.pem)","")
 	bin/cfssl gencert -initca assets/tls/ca-csr.json | bin/cfssljson -bare assets/tls/ca -
+	mkdir -p assets/server/tls
 	bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/server.json | bin/cfssljson -bare assets/server/tls/server
+	mkdir -p assets/client/tls
 	bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/client.json | bin/cfssljson -bare assets/client/tls/client
 	cp assets/tls/ca.pem assets/server/tls
 	cp assets/tls/ca.pem assets/client/tls
