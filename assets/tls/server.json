@@ -1,7 +1,8 @@
 {
-    "CN": "Server",
+    "CN": "Ngrokd Server",
     "hosts": [
-        "ngrokd.bybutter.com"
+        "ngrokd.bybutter.com",
+        "ngrokd.butterapis.com"
     ],
     "key": {
         "algo": "ecdsa",
@@ -9,10 +10,9 @@
     },
     "names": [
         {
-            "C": "US",
-            "ST": "CA",
-            "L": "San Francisco"
+            "C": "CN",
+            "ST": "Beijing",
+            "L": "Beijing"
         }
     ]
 }
-

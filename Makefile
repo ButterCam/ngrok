@@ -1,4 +1,4 @@
-.PHONY: default server client deps fmt clean all release-all assets client-assets server-assets contributors
+.PHONY: default server client deps fmt clean all release-all assets client-assets server-assets contributors gencert
 export GOPATH:=$(shell pwd)
 export GO111MODULE=off
 
@@ -26,11 +26,15 @@ bin/cfssl:
 gencert: bin/cfssl
 ifeq ("$(wildcard assets/tls/ca.pem)","")
 	bin/cfssl gencert -initca assets/tls/ca-csr.json | bin/cfssljson -bare assets/tls/ca -
+endif
+ifeq ("$(wildcard assets/server/tls/server.pem)","")
 	mkdir -p assets/server/tls
 	bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/server.json | bin/cfssljson -bare assets/server/tls/server
+	cp assets/tls/ca.pem assets/server/tls
+endif
+ifeq ("$(wildcard assets/client/tls/client.pem)","")
 	mkdir -p assets/client/tls
 	bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/client.json | bin/cfssljson -bare assets/client/tls/client
-	cp assets/tls/ca.pem assets/server/tls
 	cp assets/tls/ca.pem assets/client/tls
 endif
 

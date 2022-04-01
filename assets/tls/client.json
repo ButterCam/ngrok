@@ -1,14 +1,14 @@
 {
-    "CN": "Client",
+    "CN": "Ngrok Client",
     "key": {
         "algo": "ecdsa",
         "size": 256
     },
     "names": [
         {
-            "C": "US",
-            "ST": "CA",
-            "L": "San Francisco"
+            "C": "CN",
+            "ST": "Beijing",
+            "L": "Beijing"
         }
     ]
 }
