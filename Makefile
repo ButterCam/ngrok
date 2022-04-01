@@ -38,7 +38,7 @@ ifeq ("$(wildcard assets/server/tls/server.pem)","")
 endif
 ifeq ("$(wildcard assets/client/tls/client.pem)","")
 	mkdir -p assets/client/tls
-	bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=server assets/tls/client.json | bin/cfssljson -bare assets/client/tls/client
+	bin/cfssl gencert -ca=assets/tls/ca.pem -ca-key=assets/tls/ca-key.pem -config=assets/tls/ca-config.json -profile=client assets/tls/client.json | bin/cfssljson -bare assets/client/tls/client
 	cp assets/tls/ca.pem assets/client/tls
 endif
 
