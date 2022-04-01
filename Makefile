@@ -20,8 +20,12 @@ client: deps
 assets: client-assets server-assets
 
 bin/cfssl:
+ifeq ("$(wildcard bin/cfssl)","")
 	GOOS="" GOARCH="" go get github.com/cloudflare/cfssl/cmd/cfssl
+endif
+ifeq ("$(wildcard bin/cfssljson)","")
 	GOOS="" GOARCH="" go get github.com/cloudflare/cfssl/cmd/cfssljson
+endif
 
 gencert: bin/cfssl
 ifeq ("$(wildcard assets/tls/ca.pem)","")
